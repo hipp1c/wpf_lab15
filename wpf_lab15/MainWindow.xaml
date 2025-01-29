@@ -34,7 +34,8 @@
             MaxWidth="100"
             Margin="5"
             Background="#5EBEC4"
-            Name="removeToDo">
+            Name="removeToDo"
+            Click="removeToDo_Click">
             Удалить дело
         </Button>
 
@@ -44,7 +45,9 @@
             MaxWidth="100"
             Margin="5"
             Background="#5EBEC4"
-            Name="addToDo">
+            Name="addToDo"
+            Click="addToDo_Click"
+            Visibility="Hidden">
             <Button.ToolTip>
                 При добавлении дело появится в списке слева, и его придется выполнить
             </Button.ToolTip>
@@ -54,40 +57,29 @@
 
         <CheckBox 
             Grid.Column="1"
-            IsChecked="True"
+            IsChecked="False"
             VerticalAlignment="Bottom"
-            Margin="5">
+            Margin="5"
+            Name="checkBoxToDo"
+            Click="CheckBox_Click">
             Добавление новых дел
         </CheckBox>
-
+        
         <ListBox 
             Grid.Row="1"
             Background="#FDF5DF"
             Margin="5"
-            Name="listToDo">
-            <ListBoxItem>
-                <StackPanel>
-                    <TextBlock>Приготовить покушать</TextBlock>
-                    <TextBlock>15.01.2024</TextBlock>
-                    <TextBlock FontSize="10">Нет описания</TextBlock>
-                </StackPanel>
-            </ListBoxItem>
-
-            <ListBoxItem>
-                <StackPanel>
-                    <TextBlock>Поработать</TextBlock>
-                    <TextBlock>20.01.2024</TextBlock>
-                    <TextBlock FontSize="10">Съездить на совещание в москву</TextBlock>
-                </StackPanel>
-            </ListBoxItem>
-
-            <ListBoxItem>
-                <StackPanel>
-                    <TextBlock>Отдохнуть</TextBlock>
-                    <TextBlock>01.02.2024</TextBlock>
-                    <TextBlock FontSize="10">Съездить в отпуск в Сочи</TextBlock>
-                </StackPanel>
-            </ListBoxItem>
+            Name="listToDo"
+            ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="0 0 5 0">
+                        <TextBlock Text="{Binding Path=Name}"></TextBlock>
+                        <TextBlock FontSize="10" Text="{Binding Path=Date, StringFormat=dd.MM.yyyy}"></TextBlock>
+                        <TextBlock FontSize="10" Text="{Binding Path=Description}"></TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
 
         <GroupBox
@@ -95,7 +87,8 @@
             Grid.Row="1"
             Margin="5"
             Background="#FDF5DF"
-            Name="groupBoxToDo">
+            Name="groupBoxToDo"
+            Visibility="Hidden">
             <StackPanel
                 Margin="5">
                 <TextBlock>Название</TextBlock>

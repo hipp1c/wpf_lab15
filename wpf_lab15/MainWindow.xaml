@@ -5,114 +5,137 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:wpf_lab15"
         mc:Ignorable="d"
-        Title="MainWindow" 
-        Height="450"
-        Width="800"
-        Background="#fffdfaf1"
-        FontSize="12">
+        Title="Мой Дела" 
+        Height="450" 
+        Width="400"
+        Icon="images/icon.png">
+
+    <Window.Resources>
+        <Style TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"></Setter>
+            <Setter Property="CanUserAddRows" Value="False"></Setter>
+            <Setter Property="HeadersVisibility" Value="None"></Setter>
+            <Setter Property="CanUserDeleteRows" Value="False"></Setter>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"></Setter>
+            <Setter Property="HorizontalGridLinesBrush" Value="#5EBEC4"></Setter>
+            <Setter Property="Background" Value="White"></Setter>
+            <Setter Property="AlternationCount" Value="2"></Setter>
+            <Setter Property="AlternatingRowBackground" Value="#FFFDFAF1"></Setter>
+        </Style>
+
+        <Style TargetType="ProgressBar">
+            <Setter Property="Margin" Value="5"></Setter>
+            <Setter Property="Background" Value="#FFFDFAF1"></Setter>
+            <Setter Property="Foreground" Value="#5EBEC4"></Setter>
+        </Style>
+    </Window.Resources>
+
+
+
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="0.1*"></RowDefinition>
+        </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-        </Grid.RowDefinitions>
 
-        <TextBlock 
-            FontSize="26" 
+        <TextBlock
+            x:Name="ProgressBarText"
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            Panel.ZIndex="1"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center">
+            VerticalAlignment="Center"
+            Margin="5"
+            FontSize="20"
+            FontFamily="Cascadia Mono">
+        </TextBlock>
+
+        <ProgressBar
+            x:Name="ProgressBar"
+            Grid.Row="2"
+            Grid.ColumnSpan="2">
+        </ProgressBar>
+
+        <TextBlock
+            HorizontalAlignment="Left"
+            Style="{StaticResource HeaderStyle}">
             Список дел
         </TextBlock>
 
         <Button
-            Grid.Row="2"
-            MaxWidth="100"
-            Margin="5"
-            Background="#5EBEC4"
-            Name="removeToDo"
-            Click="removeToDo_Click">
-            Удалить дело
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            Margin="10"
+            Click="AddToDo">
+            <Image
+                Source="images/add.png" Height="26" Width="55"/>
         </Button>
 
-        <Button
-            Grid.Row="2"
-            Grid.Column="1"
-            MaxWidth="100"
-            Margin="5"
-            Background="#5EBEC4"
-            Name="addToDo"
-            Click="addToDo_Click"
-            Visibility="Hidden">
-            <Button.ToolTip>
-                При добавлении дело появится в списке слева, и его придется выполнить
-            </Button.ToolTip>
-
-            Добавить дело
-        </Button>
-
-        <CheckBox 
-            Grid.Column="1"
-            IsChecked="False"
-            VerticalAlignment="Bottom"
-            Margin="5"
-            Name="checkBoxToDo"
-            Click="CheckBox_Click">
-            Добавление новых дел
-        </CheckBox>
-        
-        <ListBox 
+        <DataGrid 
             Grid.Row="1"
+            Grid.ColumnSpan="2"
             Background="#FDF5DF"
             Margin="5"
-            Name="listToDo"
+            Name="DGListToDo"
             ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="0 0 5 0">
-                        <TextBlock Text="{Binding Path=Name}"></TextBlock>
-                        <TextBlock FontSize="10" Text="{Binding Path=Date, StringFormat=dd.MM.yyyy}"></TextBlock>
-                        <TextBlock FontSize="10" Text="{Binding Path=Description}"></TextBlock>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
 
-        <GroupBox
-            Grid.Column="1"
-            Grid.Row="1"
-            Margin="5"
-            Background="#FDF5DF"
-            Name="groupBoxToDo"
-            Visibility="Hidden">
-            <StackPanel
-                Margin="5">
-                <TextBlock>Название</TextBlock>
-                <TextBox 
-                    Margin="0 5 0 10"
-                    Name="titleToDo">
-                </TextBox>
-                <TextBlock>Выполнить до</TextBlock>
-                <DatePicker 
-                    Margin="0 5 0 10"
-                    Name="dateToDo">
-                </DatePicker>
-                <TextBlock>Описание</TextBlock>
-                <TextBox
-                    Margin="0 5 0 10"
-                    MinLines="10"
-                    MaxLines="10"
-                    AcceptsTab="True"
-                    AcceptsReturn="True"
-                    TextWrapping="Wrap"
-                    VerticalScrollBarVisibility="Visible"
-                    Name="descriptionToDo">
-                </TextBox>
-            </StackPanel>
-        </GroupBox>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn 
+                    Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox 
+                                IsChecked="{Binding Path=IsDoing}"
+                                Checked="CheckBoxChecked"
+                                Unchecked="CheckBoxUnchecked">
+                            </CheckBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTextColumn
+                    Binding="{Binding Path=Name}"
+                    Width="*"
+                    IsReadOnly="True">
+                </DataGridTextColumn>
+
+                <DataGridTextColumn
+                    Binding="{Binding Path=Date, StringFormat=dd.MM.yyyy}"
+                    Width="auto"
+                    IsReadOnly="True">
+                </DataGridTextColumn>
+
+                <DataGridTemplateColumn
+                        Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button
+                                Click="RemoveToDo">
+                                <Image 
+                                    Source="images/delete.png"
+                                    MaxWidth="10"
+                                    MaxHeight="10">
+                                </Image>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=Description}"></TextBlock>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+
+        </DataGrid>
     </Grid>
 </Window>

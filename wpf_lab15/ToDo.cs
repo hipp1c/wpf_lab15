@@ -11,6 +11,7 @@ namespace wpf_lab15
         public string? Name { get; set; }
         public DateTime Date { get; set; }
         public string? Description { get; set; }
+        public bool IsDoing { get; set; }
 
         public ToDo() { }
 
@@ -19,6 +20,7 @@ namespace wpf_lab15
             Name = name;
             Date = date;
             Description = description;
+            IsDoing = false;
         }
     }
 }

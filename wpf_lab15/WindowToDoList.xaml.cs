@@ -47,8 +47,8 @@ namespace wpf_lab15
 
             var o = Owner as MainWindow;
 
-            o.DGListToDo.ItemsSource = null;
-            o.DGListToDo.ItemsSource = MainWindow.ToDoList;
+            o.listToDo.ItemsSource = null;
+            o.listToDo.ItemsSource = MainWindow.ToDoList;
 
             o.EndToDo();
 

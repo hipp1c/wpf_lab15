@@ -32,7 +32,7 @@ namespace wpf_lab15
             ToDoList.Add(new ToDo("Забрать посылку", new DateTime(2024, 2, 21), "Почта на ул. Крауля, 74"));
             ToDoList.Add(new ToDo("Прибраться дома", new DateTime(2024, 1, 29), "Нет описания"));
 
-            DGListToDo.ItemsSource = ToDoList;
+            listToDo.ItemsSource = ToDoList;
 
             EndToDo();
         }
@@ -55,20 +55,17 @@ namespace wpf_lab15
 
         private void RemoveToDo(object sender, RoutedEventArgs e)
         {
-            if (DGListToDo.SelectedItem == null) return;
+            var todo = (sender as Button).DataContext as ToDo;
 
-            var todo = DGListToDo.SelectedItem as ToDo;
-
-            ToDoList.Remove(todo);
-            DGListToDo.Items.Refresh();
+            ToDoList?.Remove(todo);
+            listToDo.Items.Refresh();
 
             EndToDo();
         }
 
         private void CheckBoxUnchecked(object sender, RoutedEventArgs e)
         {
-            if (DGListToDo.SelectedItem == null) return;
-            var todo = DGListToDo.SelectedItem as ToDo;
+            var todo = (sender as CheckBox).DataContext as ToDo;
 
             todo.IsDoing = false;
 
@@ -77,8 +74,7 @@ namespace wpf_lab15
 
         private void CheckBoxChecked(object sender, RoutedEventArgs e)
         {
-            if (DGListToDo.SelectedItem == null) return;
-            var todo = DGListToDo.SelectedItem as ToDo;
+            var todo = (sender as CheckBox)?.DataContext as ToDo;
 
             todo.IsDoing = true;
 

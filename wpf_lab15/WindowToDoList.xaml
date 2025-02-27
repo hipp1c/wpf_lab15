@@ -26,6 +26,15 @@
             <Setter Property="Background" Value="White"></Setter>
             <Setter Property="CalendarStyle" Value="{StaticResource CalendarStyle}"></Setter>
         </Style>
+
+        <Style TargetType="DatePickerTextBox">
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="Background" Value="#FFFFFAD6"></Setter>
+                    <Setter Property="BorderThickness" Value="2"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Grid>

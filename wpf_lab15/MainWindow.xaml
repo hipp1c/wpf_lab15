@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:wpf_lab15"
         mc:Ignorable="d"
-        Title="Мой Дела" 
+        Title="Менеджер задач" 
         Height="450" 
         Width="400"
-        Icon="images/icon.png">
+        Icon="images/icon.png"
+        Closing="Window_Closing">
 
     <Window.Resources>
         <Style TargetType="ProgressBar">
@@ -37,7 +38,7 @@
 
         <Style TargetType="TextBlock" x:Key="ColorDate">
             <Setter Property="Text" Value="{Binding Path=Date, StringFormat=dd.MM.yyyy}"></Setter>
-            
+            <Setter Property="Foreground" Value="#FF71C52F"></Setter>
             <Style.Triggers>
                 <DataTrigger 
                     Binding="{Binding Path=Date, Converter={StaticResource RedDayConverter}}"
@@ -59,6 +60,25 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding
+            Command="ApplicationCommands.New"
+            Executed="AddTaskButton">
+        </CommandBinding>
+
+        <CommandBinding
+             Command="ApplicationCommands.Delete"
+             Executed="DeleteTaskButton">
+        </CommandBinding>
+
+        <CommandBinding
+             Command="ApplicationCommands.Save"
+             Executed="SaveTaskButton">
+        </CommandBinding>
+
+
+    </Window.CommandBindings>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -96,14 +116,28 @@
             Список дел
         </TextBlock>
 
-        <Button
+        <StackPanel
             Grid.Column="1"
             HorizontalAlignment="Right"
-            Margin="10"
-            Click="AddToDo">
-            <Image
-                Source="images/add.png" Height="26" Width="55"/>
-        </Button>
+            Orientation="Horizontal">
+            <Button
+                Margin="5"
+                Click="AddTaskButton">
+                <Image
+                    Source="images/add.png" Height="26" Width="26">
+                </Image>
+            </Button>
+
+            <Button
+                Command="ApplicationCommands.Save"
+                Margin="5">
+                <Image
+                    Source="images/save.png" Height="26" Width="26">
+                </Image>
+            </Button>
+        </StackPanel>
+
+
 
         <ListBox 
             Grid.Column="0"
@@ -111,11 +145,12 @@
             Grid.ColumnSpan="2"
             Background="#FDF5DF"
             Margin="5"
-            Name="listToDo"
+            Name="TaskListBox"
             HorizontalContentAlignment="Stretch"
             ScrollViewer.VerticalScrollBarVisibility="Visible">
             <ListBox.ItemTemplate>
                 <DataTemplate>
+
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -150,15 +185,21 @@
                             Grid.Column="2"
                             HorizontalAlignment="Right"
                             Margin="0,0,5,0"
-                            Foreground="#FF71C52F">
+                            >
                         </TextBlock>
 
                         <Button
-                            Click="RemoveToDo"
+                            Command="ApplicationCommands.Delete"
                             Grid.Column="3"
                             MaxWidth="20"
                             MaxHeight="20">
                             <Image Source="images/delete.png"></Image>
+                            <Button.CommandBindings>
+                                <CommandBinding
+                                     Command="ApplicationCommands.Delete"
+                                     Executed="DeleteTaskButton">
+                                </CommandBinding>
+                            </Button.CommandBindings>
                         </Button>
 
                         <TextBlock 

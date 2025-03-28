@@ -8,6 +8,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Text.Json;
+using Microsoft.Win32;
+using System.IO;
 
 namespace wpf_lab15
 {
@@ -17,68 +20,132 @@ namespace wpf_lab15
     public partial class MainWindow : Window
     {
 
-        public static List<ToDo>? ToDoList { get; set; }
+        public static List<Task>? TaskList { get; set; }
+        private static string _currentDirectory;
+        private static string _jsonPath;
+        
 
         public MainWindow()
         {
             InitializeComponent();
 
-            ToDoList = new List<ToDo>();
+            LoadTaskList();
 
-            ToDoList.Add(new ToDo("Приготовить покушать", new DateTime(2024, 1, 15), "Нет описания"));
-            ToDoList.Add(new ToDo("Поработать", new DateTime(2024, 1, 20), "Съездить на совещание в Москву"));
-            ToDoList.Add(new ToDo("Отдохнуть", new DateTime(2024, 2, 1), "Съездить в отпуск в Сочи"));
-            ToDoList.Add(new ToDo("Покормить котика", new DateTime(2024, 2, 2), "Нет описания"));
-            ToDoList.Add(new ToDo("Забрать посылку", new DateTime(2024, 2, 21), "Почта на ул. Крауля, 74"));
-            ToDoList.Add(new ToDo("Прибраться дома", new DateTime(2024, 1, 29), "Нет описания"));
-
-            listToDo.ItemsSource = ToDoList;
-
-            EndToDo();
+            UpdateTaskProgressBar();
         }
 
-        public void EndToDo()
+        private void LoadTaskList()
         {
-            int countIsDoing = ToDoList.Where(x => x.IsDoing).Count();
+            _currentDirectory = Directory.GetCurrentDirectory();
+            _jsonPath = System.IO.Path.Combine(_currentDirectory, "json.txt");
+            TaskList = new List<Task>();
+
+            if (!File.Exists(_jsonPath))
+            {
+                return;
+            }
+
+            string json = File.ReadAllText(_jsonPath);
+
+            TaskList = JsonSerializer.Deserialize<List<Task>>(json);
+
+            TaskListBox.ItemsSource = TaskList;
+        }
+
+        public void UpdateTaskProgressBar()
+        {
+            int countIsDoing = TaskList.Where(x => x.IsDoing).Count();
             ProgressBar.Minimum = 0;
-            ProgressBar.Maximum = ToDoList.Count;
+            ProgressBar.Maximum = TaskList.Count;
             ProgressBar.Value = countIsDoing;
-            ProgressBarText.Text = $"{countIsDoing}/{ToDoList.Count}";
+            ProgressBarText.Text = $"{countIsDoing}/{TaskList.Count}";
         }
 
-        private void AddToDo(object sender, RoutedEventArgs e)
+        private void AddTaskButton(object sender, RoutedEventArgs e)
         {
-            WindowToDoList _windowToDoList = new WindowToDoList();
+            TaskCreationWindow _windowToDoList = new TaskCreationWindow();
             _windowToDoList.Owner = this;
             _windowToDoList.Show();
         }
 
-        private void RemoveToDo(object sender, RoutedEventArgs e)
-        {
-            var todo = (sender as Button).DataContext as ToDo;
-
-            ToDoList?.Remove(todo);
-            listToDo.Items.Refresh();
-
-            EndToDo();
-        }
-
         private void CheckBoxUnchecked(object sender, RoutedEventArgs e)
         {
-            var todo = (sender as CheckBox).DataContext as ToDo;
+            var task = (sender as CheckBox).DataContext as Task;
 
-            todo.IsDoing = false;
+            task.IsDoing = false;
 
-            EndToDo();
+            UpdateTaskProgressBar();
         }
 
         private void CheckBoxChecked(object sender, RoutedEventArgs e)
         {
-            var todo = (sender as CheckBox)?.DataContext as ToDo;
+            var task = (sender as CheckBox).DataContext as Task;
 
-            todo.IsDoing = true;
+            task.IsDoing = true;
 
-            EndToDo();
+            UpdateTaskProgressBar();
+        }
+
+        private void SaveTaskButton(object sender, ExecutedRoutedEventArgs e)
+        {
+            SaveTask();
+        }
+
+        private void SaveTask()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Normal text file (*.txt)|*.txt";
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                if (TaskList.Count == 0)
+                {
+                    MessageBox.Show("В списке нет дел");
+                    return;
+                }
+
+                string text = "";
+
+                foreach (Task item in TaskList)
+                {
+                    text += item.ToString();
+                }
+
+                string json = JsonSerializer.Serialize(TaskList);
+
+                File.WriteAllText(saveFileDialog.FileName, text);
+                File.WriteAllText(_jsonPath, json);
+
+            }
+        }
+
+        private void DeleteTaskButton(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Вы уверены, что хотите удалить дело?", "655", MessageBoxButton.YesNo);;
+
+            if (result.HasFlag(MessageBoxResult.No))
+            {
+                return;
+            }
+
+            if(sender is Button)
+            {
+                var task = (sender as Button).DataContext as Task;
+                TaskList?.Remove(task);
+            }
+            else
+            {
+                TaskList.Remove(TaskListBox.SelectedItem as Task);
+            }
+
+            TaskListBox.ItemsSource = null;
+            TaskListBox.ItemsSource = TaskList;
+            UpdateTaskProgressBar();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SaveTask();
         }
     }
 }

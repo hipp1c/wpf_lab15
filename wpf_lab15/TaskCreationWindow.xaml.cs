@@ -14,25 +14,25 @@ using System.Windows.Shapes;
 
 namespace wpf_lab15
 {
-    public partial class WindowToDoList : Window
+    public partial class TaskCreationWindow : Window
     {
-
-        public WindowToDoList()
+        public static RoutedCommand AddTaskCommand = new RoutedCommand();
+        public TaskCreationWindow()
         {
             InitializeComponent();
 
             descriptionToDo.Text = "Описания нет";
-            dateToDo.SelectedDate = new DateTime(2024, 1, 10);
+            dateToDo.SelectedDate = DateTime.Now;
         }
 
-        private void SaveToDo(object sender, RoutedEventArgs e)
+        private void CreateTaskButton(object sender, RoutedEventArgs e)
         {
             if (titleToDo.Text == null ||
                 dateToDo.SelectedDate == null ||
                 titleToDo.Text == "")
                 return;
 
-            var todo = new ToDo();
+            var todo = new Task();
 
             todo.Name = titleToDo.Text;
             titleToDo.Text = null;
@@ -43,14 +43,14 @@ namespace wpf_lab15
             todo.Description = descriptionToDo.Text;
             descriptionToDo.Text = "Описания нет";
 
-            MainWindow.ToDoList.Add(todo);
+            MainWindow.TaskList.Add(todo);
 
             var o = Owner as MainWindow;
 
-            o.listToDo.ItemsSource = null;
-            o.listToDo.ItemsSource = MainWindow.ToDoList;
+            o.TaskListBox.ItemsSource = null;
+            o.TaskListBox.ItemsSource = MainWindow.TaskList;
 
-            o.EndToDo();
+            o.UpdateTaskProgressBar();
 
             this.Close();
 

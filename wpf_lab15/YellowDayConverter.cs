@@ -16,7 +16,7 @@ namespace wpf_lab15
 
             if (d != null)
             {
-                return DateTime.Now.AddDays(1) == d.Value.Date;
+                return DateTime.Now.AddDays(1).Date == d.Value.Date;
             }
 
             return false;
